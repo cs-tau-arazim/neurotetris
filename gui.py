@@ -10,8 +10,11 @@ windowSize = 768, 1024
 screen = pygame.display.set_mode(windowSize)
 screen.fill([255,255,255])
 
+boardWidth = 12
+boardLength = 50
+
 #TODO remove
-board = [[0 if (i+j) % 2 == 0 else 1 for j in xrange(10)] for i in xrange(10)]
+board = [[0 if (i+j) % 2 == 0 else 1 for j in xrange(boardWidth)] for i in xrange(boardLength)]
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -38,10 +41,12 @@ while True:
         if event.type == pygame.QUIT:
             sys.exit()
 
-    for i in xrange(10):
-        for j in xrange(10):
+    for i in xrange(boardLength):
+        for j in xrange(boardWidth):
             if (board[i][j]):
-                draw.rect(screen,black,(i*50 + 50,j*50 + 50,blockSize,blockSize))
+                draw.rect(screen,black,(j*blockSize + 5,i*blockSize + 5,blockSize,blockSize))
+
+    #board = tetris.getBoard()
 
     pygame.display.update()
 

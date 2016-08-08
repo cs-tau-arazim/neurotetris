@@ -39,7 +39,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import pygame, sys
+import pygame, sys, ann
 from random import randrange as rand
 
 # The configuration
@@ -277,8 +277,7 @@ class TetrisApp(object):
             self.gameover = False
 
     def run(self):
-
-        # player = ann.player()
+        player = ann.Ann(rows, cols)
 
         key_actions = {
             'ESCAPE': self.quit,
@@ -322,15 +321,15 @@ Press space to continue""" % self.score)
                                      (cols + 1, 2))
             pygame.display.update()
 
+            # TODO here is where we will change the game
+            move = player.play(self.board)
+            key_actions[move]() # TODO currently just moves left
+
             for event in pygame.event.get():
                 if event.type == pygame.USEREVENT + 1:
                     self.drop(False)
                 elif event.type == pygame.QUIT:
                     self.quit()
-                # TODO here is where we will change the game
-
-
-                # move = player.play(board)
 
                 elif event.type == pygame.KEYDOWN:
                     for key in key_actions:

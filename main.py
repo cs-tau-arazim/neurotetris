@@ -3,8 +3,9 @@ import ann, tetris, generic, numpy
 if __name__ == '__main__':
     generation_size = generic.generation_size
 
-    unitTime = 500
-    minimal_gui = False
+    unitTime = 10
+    minimal_gui = True
+    minimal_ai = True
 
     matrix = []
     results = []
@@ -18,7 +19,7 @@ if __name__ == '__main__':
 
         # Play the game for each ai
         for i in xrange(generation_size):
-            App = tetris.TetrisApp(ai_players[i], unitTime, minimal_gui)
+            App = tetris.TetrisApp(ai_players[i], unitTime, minimal_gui, minimal_ai)
             # optional TODO - play 10 games for each AI
             gameRes = App.run()
             # print "Evaluation for AI #" + str(i) + ": " + str(gameRes)

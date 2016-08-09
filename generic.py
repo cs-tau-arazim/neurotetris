@@ -15,12 +15,16 @@ output_size = 4
 mutation_prob = 0.05
 change_prob = 0.9
 
+expected_mutation = 0.5
+std = 0.5
+std_change = 0.2
+
 
 # creates a single random nn
 def create_nn():
-    nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
-          [[0 for i in xrange(l1_size)] for i in xrange(l2_size)],\
-          [[0 for i in xrange(l2_size)] for i in xrange(output_size)]]
+    nn = [[[random.gauss(expected_mutation,std) for i in xrange(input_size)] for i in xrange(l1_size)],\
+          [[random.gauss(expected_mutation,std) for i in xrange(l1_size)] for i in xrange(l2_size)],\
+          [[random.gauss(expected_mutation,std) for i in xrange(l2_size)] for i in xrange(output_size)]]
 
     return nn
 
@@ -57,9 +61,9 @@ def mutation(child):
                 if r < mutation_prob:
                     r = random.uniform(0, 1)
                     if r > change_prob:
-                        child[i][j][k] = random.gauss(0,1)
+                        child[i][j][k] = random.gauss(expected_mutation,std)
                     else:
-                        child[i][j][k] += random.gauss(0,0.2)
+                        child[i][j][k] += random.gauss(0,std_change)
 
 
 # selects @proportion of the existing population to breed a new generation
@@ -168,8 +172,14 @@ def tester():
     print_nn(gen[0][0])
 
 
+def testInit():
+    gen = init()
+    print_nn(gen[1])
+
+
 def print_nn(nn):
     for i in xrange(len(nn)):
         for j in xrange(len(nn[i])):
             print nn[i][j]
         print
+

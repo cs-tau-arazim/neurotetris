@@ -123,7 +123,7 @@ def new_board():
 
 
 class TetrisApp(object):
-    def __init__(self, player_ai, unitTime, minimal_gui):  # start game with given ann
+    def __init__(self, player_ai, unitTime, minimal_gui, minimal_ai):  # start game with given ann
         if minimal_gui:
             pygame.init()
             pygame.key.set_repeat(250, 25)
@@ -362,7 +362,16 @@ class TetrisApp(object):
 
             if not self.minimal_gui:
                 self.drop(False)
+
             else:
+
+                if limit < 5:
+                    move = self.player_ai.play(self.board)
+                    assert len(self.board) == 23
+                    assert len(self.board[0]) == 10
+                    if move != "NOTHING":
+                        key_actions[move]()
+                    limit += 1
                 for event in pygame.event.get():
                     if event.type == pygame.USEREVENT + 1:
                         self.drop(False)

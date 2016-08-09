@@ -4,53 +4,86 @@ import random
 import operator
 import math
 
+layers = 3
 generation_size = 100  # TODO change?
 proportion = 0.3  # TODO change?
+input_size = 220
+l1_size = 50  # TODO change?
+l2_size = 10 # TODO change?
+output_size = 4
+
+mutation_prob = 0.05
+change_prob = 0.9
+
+
+# creates a single random nn
+def create_nn():
+    nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
+          [[0 for i in xrange(l1_size)] for i in xrange(l2_size)],\
+          [[0 for i in xrange(l2_size)] for i in xrange(output_size)]]
+
+    return nn
 
 
 # initializes @generation_size random neural networks
 def init():
-    #TODO change
-    matList = [[[]]]
-    return [matList for i in xrange(generation_size)]
+    nns = []
+    for i in xrange (generation_size):
+        nns.append(mutation(create_nn()))
 
+    return nns
 
 
 # creates a new child from the parents
 def crossover(parent1, parent2):
-    pass
+    child = create_nn()
+    for i in xrange(len(parent1)):
+        for j in xrange(len(parent1[i])):
+            witch_p = bool(random.getrandbits(1))
+            if witch_p:
+                child[i][j] = list(parent1[i][j])
+            else:
+                child[i][j] = list(parent2[i][j])
+    return child
 
 
 # creates mutations in the child
 def mutation(child):
-    pass
+    for i in xrange(len(child)):
+        for j in xrange(len(child[i])):
+            for k in range(len(child[i][j])):
+                r = random.uniform(0, 1)
+                if r < mutation_prob:
+                    r = random.uniform(0, 1)
+                    if r > change_prob:
+                        child[i][j][k] = random.gauss(0,1)
+                    else:
+                        child[i][j][k] += random.gauss(0,0.2)
 
 
 # selects @proportion of the existing population to breed a new generation
 # last_gen is a dict with (NN, fitness)
-# O(
+#
 def selection(last_gen):
-
-    last_gen = {}  # TODO REMOVE
     size = 1/proportion
 
-    potential_parents = {}
+    potential_parents = []
     while len(last_gen) > 0:
-        tournament = {}
+        tournament = []
         tour_size = min(size, len(last_gen))
         for i in xrange(tour_size):
             chosen_nn = random.choice(last_gen)
-            tournament.update({chosen_nn})
-            last_gen.pop(chosen_nn)
+            tournament.append(chosen_nn)
+            last_gen.remove(chosen_nn)
 
         best_fit = -1
 
         for nn in tournament:
-            if tournament[nn] > best_fit:
-                best_fit = tournament.get(nn)
+            if nn[1] > best_fit:
+                best_fit = nn[1]
                 best_nn = nn
 
-            potential_parents.update({best_nn})
+            potential_parents.append(best_nn)
 
     return potential_parents
 
@@ -86,29 +119,29 @@ def select_parent_fitness_proportionate(potential_parents):
 # selects an individual parent to breed a new child
 # potential_parents is a dict with (NN, fitness)
 # tournament selection
-# O(nlogn)
+# O(size)
 def select_parent(potential_parents):
-    potential_parents = {}  # TODO REMOVE
     size = 10  # TODO change?
 
-    tournament = {}
+    tournament = []
 
     for i in xrange(size):
         chosen_nn = random.choice(potential_parents)
-        tournament.update({chosen_nn})
+        tournament.append(chosen_nn)
 
     best_fit = -1
 
     for nn in tournament:
-        if tournament[nn] > best_fit:
-            best_fit = tournament.get(nn)
-            best_nn = nn
+        if nn[1] > best_fit:
+            best_fit = nn[1]
+            best_nn = nn[0]
 
     return best_nn
 
+
 # uses select, crossover and mutation to generate a new generation
 # last_gen is a dict with (NN, fitness)
-def generate_new_gen(last_gen):
+def generate_new_gen(last_gen): # TODO change to tumple
     potential_parents = selection(last_gen)
     new_gen = []
     for i in xrange(generation_size):
@@ -118,3 +151,20 @@ def generate_new_gen(last_gen):
         mutation(child)
         new_gen.append(child)
     return new_gen
+
+
+def tester():
+    nn = create_nn()
+    mutation(nn)
+    print_nn(nn)
+
+
+def print_nn(nn):
+    for i in xrange(len(nn)):
+        for j in xrange(len(nn[i])):
+            print nn[i][j]
+        print
+
+
+
+tester()

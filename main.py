@@ -12,9 +12,10 @@ if __name__ == '__main__':
     ai_players_data = generic.init()
     generation = 1
 
-    while generation < 5:
+    while generation < 2:
+
         print "Generation" + str(generation) + ":"
-        ai_players = [ann.Ann(ai_players_data[i]) for i in range(generation_size)]
+        ai_players = [ann.Ann(ai_players_data[i]) for i in xrange(generation_size)]
 
         # Play the game for each ai
         for i in xrange(generation_size):

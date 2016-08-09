@@ -28,8 +28,9 @@ def create_nn():
 # initializes @generation_size random neural networks
 def init():
     nns = []
-    for i in xrange (generation_size):
-        nns.append(mutation(create_nn()))
+    for i in xrange(generation_size):
+        nns.append(create_nn())
+        mutation(nns[i])
 
     return nns
 
@@ -70,7 +71,7 @@ def selection(last_gen):
     potential_parents = []
     while len(last_gen) > 0:
         tournament = []
-        tour_size = min(size, len(last_gen))
+        tour_size = int(min(size, len(last_gen)))
         for i in xrange(tour_size):
             chosen_nn = random.choice(last_gen)
             tournament.append(chosen_nn)
@@ -83,7 +84,7 @@ def selection(last_gen):
                 best_fit = nn[1]
                 best_nn = nn
 
-            potential_parents.append(best_nn)
+        potential_parents.append(best_nn)
 
     return potential_parents
 
@@ -154,9 +155,20 @@ def generate_new_gen(last_gen): # TODO change to tumple
 
 
 def tester():
-    nn = create_nn()
-    mutation(nn)
-    print_nn(nn)
+    gen = init()
+    for nn in gen:
+        nn = (nn,5)
+
+    #print (len(gen))
+    gen = selection(gen)
+    p1 = select_parent(gen)
+    p2 = select_parent(gen)
+
+    print_nn(p1)
+    print_nn(p2)
+
+    child = crossover(p1,p2)
+    print_nn (child)
 
 
 def print_nn(nn):

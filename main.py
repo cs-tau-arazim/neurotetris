@@ -4,7 +4,7 @@ if __name__ == '__main__':
     generation_size = generic.generation_size
 
     unitTime = 10
-    minimal_gui = True
+    minimal_gui = False
     minimal_ai = True
 
     matrix = []
@@ -25,7 +25,18 @@ if __name__ == '__main__':
             # print "Evaluation for AI #" + str(i) + ": " + str(gameRes)
             results.append(gameRes)
 
-        print max(results)
+        maxInt = 0
+        maxRes = max(results)
+        print maxRes
+
+        for i in results:
+            if results[i] == maxRes:
+                maxInt = i
+                break
+
+        # BEST
+        App = tetris.TetrisApp(ai_players[maxInt], unitTime, True, minimal_ai)
+        App.run()
 
         result_list = [(ai_players_data[i], results[i]) for i in xrange(generation_size)]
         ai_players_data = generic.generate_new_gen(result_list)

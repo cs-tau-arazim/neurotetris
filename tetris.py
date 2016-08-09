@@ -228,7 +228,6 @@ class TetrisApp(object):
             else:
                 pygame.time.set_timer(pygame.USEREVENT + 1, 0)
 
-
     def move(self, delta_x):
         if not self.gameover and not self.paused:
             new_x = self.stone_x + delta_x
@@ -351,9 +350,13 @@ class TetrisApp(object):
 
             # TODO here is where we will change the game
 
-
             for i in xrange(5):
-                move = self.player_ai.play(self.board)
+                #move = self.player_ai.play(self.board)
+
+                boardCopy = [[self.board[i][j] for j in xrange(len(self.board[0]))] for i in xrange(len(self.board))]
+
+                move = self.player_ai.play(join_matrixes(boardCopy, self.stone, (self.stone_x, self.stone_y)))
+
                 assert len(self.board) == 23
                 assert len(self.board[0]) == 10
                 if move != "NOTHING":

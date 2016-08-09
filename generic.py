@@ -22,6 +22,7 @@ std_change = 0.2
 
 # creates a single random nn
 def create_nn():
+<<<<<<< Updated upstream
 
     """
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
@@ -31,6 +32,15 @@ def create_nn():
 
     #random.gauss(expected_mutation,std)
     nn = [[[0 for i in xrange(input_size)] for i in xrange(output_size)]]
+=======
+    
+    nn = [[[random.gauss(expected_mutation,std) for i in xrange(input_size)] for i in xrange(l1_size)],\
+          [[random.gauss(expected_mutation,std) for i in xrange(l1_size)] for i in xrange(l2_size)],\
+          [[random.gauss(expected_mutation,std) for i in xrange(l2_size)] for i in xrange(output_size)]]
+    """
+    nn = [[[random.gauss(expected_mutation,std) for i in xrange(input_size)] for i in xrange(output_size)]]
+    """
+>>>>>>> Stashed changes
 
     return nn
 

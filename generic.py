@@ -146,7 +146,7 @@ def select_parent(potential_parents):
 
 # uses select, crossover and mutation to generate a new generation
 # last_gen is a dict with (NN, fitness)
-def generate_new_gen(last_gen): # TODO change to tumple
+def generate_new_gen(last_gen):
     potential_parents = selection(last_gen)
     new_gen = []
     for i in xrange(generation_size):
@@ -184,6 +184,4 @@ def print_nn(nn):
         print
 
 
-
-#tester()
 testInit()

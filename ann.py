@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def threshhold_function(x):
+def threshold_function(x):
     return 1.0 / (1 + np.exp(-20.0 * (x - 1)))
 
 
@@ -14,16 +14,20 @@ class Ann:
 
     # returns the output vector
     def get_output(self, input_vector):
-        output = None
+        output = input_vector
         length = len(self.weight_matrices)
         for i in xrange(length - 1):
-            output = self.weight_matrices[i] * input_vector
-            output = self.check_threshhold(output)
-        return self.weight_matrices[length - 1] * input_vector
+            output = self.weight_matrices[i] * output
+            output = self.check_threshold(output)
+
+        return self.weight_matrices[length - 1] * output
 
     # returns a binary vector of the nuerons being fired
-    def check_threshhold(self, v):
-        return [threshhold_function(x) for x in v]
+    def check_threshold(self, v):
+        lst = v.getT().tolist()
+        lst = lst[0]
+        lst = [threshold_function(x) for x in lst]
+        return np.matrix([lst]).getT()
 
     # converts the board into it's input represetation
     def parse_board(self, board):
@@ -31,7 +35,7 @@ class Ann:
         for i in xrange(len(board) - 1):         # the last line is irreleveant
             for j in xrange(len(board[i])):
                 input_vector.append(board[i][j])
-        return input_vector
+        return np.matrix([input_vector]).getT()
 
 
 

@@ -37,8 +37,6 @@ class Ann:
                 input_vector.append(board[i][j])
         return np.matrix([input_vector]).getT()
 
-
-
     # returns the index of the maximum
     def get_max_index(self,vector):
         vector_as_list = vector.tolist()
@@ -54,7 +52,7 @@ class Ann:
 
     # returns the key that is pressed based on the input
     def play(self, board):
-        buttons = ['LEFT', 'RIGHT', 'UP', 'NOTHING']
+        buttons = ['NOTHING', 'LEFT', 'RIGHT', 'UP']
         input_vector = self.parse_board(board)
         out_vector = self.get_output(input_vector)
         return buttons[self.get_max_index(out_vector)]

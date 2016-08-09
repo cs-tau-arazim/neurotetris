@@ -124,14 +124,17 @@ def new_board():
 
 class TetrisApp(object):
     def __init__(self, player_ai, unitTime, minimal_gui):  # start game with given ann
-        pygame.init()
-        pygame.key.set_repeat(250, 25)
+        if minimal_gui:
+            pygame.init()
+            pygame.key.set_repeat(250, 25)
         self.width = cell_size * (cols + 6)
         self.height = cell_size * rows
         self.rlim = cell_size * cols
         self.player_ai = player_ai  # new
         self.unitTime = unitTime
         self.minimal_gui = minimal_gui
+
+        self.evaluate = 0
 
         self.bground_grid = [[8 if x % 2 == y % 2 else 0 for x in xrange(cols)] for y in xrange(rows)]
 
@@ -151,6 +154,7 @@ class TetrisApp(object):
         self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
         self.stone_x = int(cols / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
+        self.evaluate += 1
 
         if check_collision(self.board,
                            self.stone,
@@ -161,21 +165,22 @@ class TetrisApp(object):
         self.board = new_board()
         self.new_stone()
         self.level = 1
+
         self.score = 0
         self.lines = 0
-        pygame.time.set_timer(pygame.USEREVENT + 1, self.unitTime)
+        if self.minimal_gui:
+            pygame.time.set_timer(pygame.USEREVENT + 1, self.unitTime)
 
     def disp_msg(self, msg, topleft):
         x, y = topleft
         for line in msg.splitlines():
-            if self.minimal_gui:
-                self.screen.blit(
-                    self.default_font.render(
-                        line,
-                        False,
-                        (255, 255, 255),
-                        (0, 0, 0)),
-                    (x, y))
+            self.screen.blit(
+                self.default_font.render(
+                    line,
+                    False,
+                    (255, 255, 255),
+                    (0, 0, 0)),
+                (x, y))
             y += 14
 
     def center_msg(self, msg):
@@ -212,11 +217,17 @@ class TetrisApp(object):
         linescores = [0, 40, 100, 300, 1200]
         self.lines += n
         self.score += linescores[n] * self.level
+        self.evaluate += linescores[n] * self.level
+
         if self.lines >= self.level * 6:
             self.level += 1
             newdelay = self.unitTime - self.unitTime/20 * (self.level - 1)
             newdelay = self.unitTime/10 if newdelay < self.unitTime/10 else newdelay
-            pygame.time.set_timer(pygame.USEREVENT + 1, newdelay)
+            if self.minimal_gui:
+                pygame.time.set_timer(pygame.USEREVENT + 1, newdelay)
+            else:
+                pygame.time.set_timer(pygame.USEREVENT + 1, 0)
+
 
     def move(self, delta_x):
         if not self.gameover and not self.paused:
@@ -231,13 +242,16 @@ class TetrisApp(object):
                 self.stone_x = new_x
 
     def quit(self):
-        self.center_msg("Exiting...")
-        pygame.display.update()
+        if self.minimal_gui:
+            self.center_msg("Exiting...")
+            pygame.display.update()
         sys.exit()
 
     def drop(self, manual):
         if not self.gameover and not self.paused:
             self.score += 1 if manual else 0
+            self.evaluate += 1 if manual else 0
+
             self.stone_y += 1
             if check_collision(self.board,
                                self.stone,
@@ -297,7 +311,8 @@ class TetrisApp(object):
         self.gameover = False
         self.paused = False
 
-        dont_burn_my_cpu = pygame.time.Clock()
+        if self.minimal_gui:
+            dont_burn_my_cpu = pygame.time.Clock()
         limit = 0
 
         while 1:
@@ -307,7 +322,7 @@ class TetrisApp(object):
                 if self.minimal_gui:
                     self.center_msg("""Game Over!\nYour score: %d
     Press space to continue""" % self.score)
-                return self.score
+                return self.evaluate
             else:
                 if self.paused:
                     if self.minimal_gui:
@@ -336,28 +351,32 @@ class TetrisApp(object):
 
             # TODO here is where we will change the game
 
-            if limit < 5:
 
+            for i in xrange(5):
                 move = self.player_ai.play(self.board)
                 assert len(self.board) == 23
                 assert len(self.board[0]) == 10
                 if move != "NOTHING":
-                    key_actions[move]()  # TODO currently just moves left
-                limit += 1
+                    key_actions[move]()
+                #limit += 1
 
-            for event in pygame.event.get():
-                if event.type == pygame.USEREVENT + 1:
-                    self.drop(False)
-                    limit = 0
+            if not self.minimal_gui:
+                self.drop(False)
+            else:
+                for event in pygame.event.get():
+                    if event.type == pygame.USEREVENT + 1:
+                        self.drop(False)
+                        limit = 0
 
-                elif event.type == pygame.QUIT:
-                    self.quit()
+                    elif event.type == pygame.QUIT:
+                        self.quit()
 
-                elif event.type == pygame.KEYDOWN:
-                    for key in key_actions:
-                        if event.key == eval("pygame.K_"
-                                                     + key):
-                            key_actions[key]()
+                    elif event.type == pygame.KEYDOWN:
+                        for key in key_actions:
+                            if event.key == eval("pygame.K_"
+                                                         + key):
+                                key_actions[key]()
 
-            dont_burn_my_cpu.tick(maxfps)
+
+                dont_burn_my_cpu.tick(maxfps)
 

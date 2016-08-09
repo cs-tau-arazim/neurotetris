@@ -173,10 +173,3 @@ def print_nn(nn):
         for j in xrange(len(nn[i])):
             print nn[i][j]
         print
-
-<<<<<<< HEAD
-=======
-
-
-#tester()
->>>>>>> origin/master

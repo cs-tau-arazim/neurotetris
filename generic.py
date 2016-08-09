@@ -156,19 +156,16 @@ def generate_new_gen(last_gen): # TODO change to tumple
 
 def tester():
     gen = init()
-    for nn in gen:
-        nn = (nn,5)
+    for i in xrange(len(gen)):
+        gen[i] = (gen[i],5)
 
-    #print (len(gen))
-    gen = selection(gen)
-    p1 = select_parent(gen)
-    p2 = select_parent(gen)
+    for i in xrange(10):
+        print i
+        gen = generate_new_gen(gen)
+        for i in xrange(len(gen)):
+            gen[i] = (gen[i],5)
 
-    print_nn(p1)
-    print_nn(p2)
-
-    child = crossover(p1,p2)
-    print_nn (child)
+    print_nn(gen[0][0])
 
 
 def print_nn(nn):
@@ -179,4 +176,4 @@ def print_nn(nn):
 
 
 
-tester()
+#tester()

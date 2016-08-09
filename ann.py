@@ -30,17 +30,31 @@ class Ann:
         return np.matrix([lst]).getT()
 
     # converts the board into it's input represetation
-    def parse_board(self, board):
+    def parse_input(self, board, index, rotate, x, y):
         input_vector = []
         for i in xrange(len(board) - 1):         # the last line is irreleveant
             for j in xrange(len(board[i])):
                 input_vector.append(self.to_binary_rep(board[i][j]))
+        for i in xrange(3):
+            input_vector.append(index%2)
+            index /= 2
+        for i in xrange(2):
+            input_vector.append(rotate%2)
+            rotate /= 2
+        for i in xrange(4):
+            input_vector.append(x%2)
+            x /= 2
+        for i in xrange(5):
+            input_vector.append(y%2)
+            y /= 2
         return np.matrix([input_vector]).getT()
 
     def to_binary_rep(self, n):
         if n > 0:
             return 1
         return 0
+
+
     # returns the index of the maximum
     def get_max_index(self,vector):
         vector_as_list = vector.getT().tolist()
@@ -54,9 +68,11 @@ class Ann:
         pass
 
     # returns the key that is pressed based on the input
-    def play(self, board):
+    # index - 3 bit, rotate - 2 bit,  x - 4 bit, y - 5 bit
+    def play(self, board, index, rotate, x, y):
         buttons = ['NOTHING', 'LEFT', 'RIGHT', 'UP']
-        input_vector = self.parse_board(board)
+        input_vector = self.parse_input(board, index, rotate, x, y)
         out_vector = self.get_output(input_vector)
         i = self.get_max_index(out_vector)
+
         return buttons[i]

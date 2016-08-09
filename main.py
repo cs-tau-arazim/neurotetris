@@ -12,9 +12,9 @@ if __name__ == '__main__':
     ai_players_data = generic.init()
     generation = 1
 
-    while generation < 15:
-
-        print "Generation" + str(generation) + ":"
+    while True:
+        results = []
+        print "Generation #" + str(generation) + ":"
         ai_players = [ann.Ann(ai_players_data[i]) for i in xrange(generation_size)]
 
         # Play the game for each ai
@@ -27,9 +27,8 @@ if __name__ == '__main__':
 
         maxInt = 0
         maxRes = max(results)
-        print maxRes
-
-        for i in results:
+        print [int(n) for n in sorted(results)]
+        for i in xrange(len(results)):
             if results[i] == maxRes:
                 maxInt = i
                 break

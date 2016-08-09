@@ -134,6 +134,8 @@ class TetrisApp(object):
         self.unitTime = unitTime
         self.minimal_gui = minimal_gui
 
+        self.shape_index = 0
+        self.shape_rotate = 0
         self.evaluate = 0
 
         self.bground_grid = [[8 if x % 2 == y % 2 else 0 for x in xrange(cols)] for y in xrange(rows)]
@@ -150,11 +152,16 @@ class TetrisApp(object):
         self.init_game()
 
     def new_stone(self):
+        self.shape_rotate = 0
+
         self.stone = self.next_stone[:]
+
+        self.shape_index = tetris_shapes.index(self.stone)
+
         self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
         self.stone_x = int(cols / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
-        self.evaluate += 1
+        # self.evaluate += 1 TODO reward for stones?
 
         if check_collision(self.board,
                            self.stone,
@@ -217,7 +224,7 @@ class TetrisApp(object):
         linescores = [0, 40, 100, 300, 1200]
         self.lines += n
         self.score += linescores[n] * self.level
-        self.evaluate += linescores[n] * self.level
+        self.evaluate += linescores[n] * self.level * 500
 
         if self.lines >= self.level * 6:
             self.level += 1
@@ -281,6 +288,7 @@ class TetrisApp(object):
 
     def rotate_stone(self):
         if not self.gameover and not self.paused:
+            self.shape_rotate = (self.shape_rotate + 1) % 4
             new_stone = rotate_clockwise(self.stone)
             if not check_collision(self.board,
                                    new_stone,
@@ -321,6 +329,7 @@ class TetrisApp(object):
                 if self.minimal_gui:
                     self.center_msg("""Game Over!\nYour score: %d
     Press space to continue""" % self.score)
+                self.evaluate_board()
                 return self.evaluate
             else:
                 if self.paused:
@@ -350,13 +359,12 @@ class TetrisApp(object):
 
             # TODO here is where we will change the game
 
-            for i in xrange(5):
+            for i in xrange(1):
                 #move = self.player_ai.play(self.board)
+                #boardCopy = [[self.board[i][j] for j in xrange(len(self.board[0]))] for i in xrange(len(self.board))]
+                #move = self.player_ai.play(join_matrixes(boardCopy, self.stone, (self.stone_x, self.stone_y)))
 
-                boardCopy = [[self.board[i][j] for j in xrange(len(self.board[0]))] for i in xrange(len(self.board))]
-
-                move = self.player_ai.play(join_matrixes(boardCopy, self.stone, (self.stone_x, self.stone_y)))
-
+                move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
                 assert len(self.board) == 23
                 assert len(self.board[0]) == 10
                 if move != "NOTHING":
@@ -369,7 +377,7 @@ class TetrisApp(object):
             else:
 
                 if limit < 5:
-                    move = self.player_ai.play(self.board)
+                    move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
                     assert len(self.board) == 23
                     assert len(self.board[0]) == 10
                     if move != "NOTHING":
@@ -392,3 +400,27 @@ class TetrisApp(object):
 
                 dont_burn_my_cpu.tick(maxfps)
 
+    def evaluate_board(self):
+        for i in range(len(self.board) - 1):
+            count = 0
+            for bit in self.board[i]:
+                if bit > 0:
+                    count += 1
+            self.evaluate += (1.4 ** i) * count
+
+            #n = self.get_max_length(line)
+            #self.evaluate += 1.4 ** n if n != 0 else 0
+
+    def get_max_length(self, line):
+        current = 0
+        m = 0
+        for n in line:
+            if n == 0:
+                if current > m:
+                    m = current
+                current = 0
+            else:
+                current += 1
+        if current > m:
+            m = current
+        return m

@@ -7,7 +7,7 @@ import math
 layers = 3
 generation_size = 100  # TODO change?
 proportion = 0.3  # TODO change?
-input_size = 220
+input_size = 234
 l1_size = 50  # TODO change?
 l2_size = 10 # TODO change?
 output_size = 4
@@ -22,7 +22,6 @@ std_change = 0.2
 
 # creates a single random nn
 def create_nn():
-<<<<<<< Updated upstream
 
     """
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
@@ -30,17 +29,11 @@ def create_nn():
           [[0 for i in xrange(l2_size)] for i in xrange(output_size)]]
     """
 
+    nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
+          [[0 for i in xrange(l1_size)] for i in xrange(output_size)]]
+
     #random.gauss(expected_mutation,std)
-    nn = [[[0 for i in xrange(input_size)] for i in xrange(output_size)]]
-=======
-    
-    nn = [[[random.gauss(expected_mutation,std) for i in xrange(input_size)] for i in xrange(l1_size)],\
-          [[random.gauss(expected_mutation,std) for i in xrange(l1_size)] for i in xrange(l2_size)],\
-          [[random.gauss(expected_mutation,std) for i in xrange(l2_size)] for i in xrange(output_size)]]
-    """
-    nn = [[[random.gauss(expected_mutation,std) for i in xrange(input_size)] for i in xrange(output_size)]]
-    """
->>>>>>> Stashed changes
+    #nn = [[[0 for i in xrange(input_size)] for i in xrange(output_size)]]
 
     return nn
 

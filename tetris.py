@@ -123,20 +123,23 @@ def new_board():
 
 
 class TetrisApp(object):
-    def __init__(self, player_ai):  # start game with given ann
+    def __init__(self, player_ai, unitTime, minimal_gui):  # start game with given ann
         pygame.init()
         pygame.key.set_repeat(250, 25)
         self.width = cell_size * (cols + 6)
         self.height = cell_size * rows
         self.rlim = cell_size * cols
         self.player_ai = player_ai  # new
+        self.unitTime = unitTime
+        self.minimal_gui = minimal_gui
+
         self.bground_grid = [[8 if x % 2 == y % 2 else 0 for x in xrange(cols)] for y in xrange(rows)]
 
-        self.default_font = pygame.font.Font(
+        if minimal_gui:
+            self.default_font = pygame.font.Font(
             pygame.font.get_default_font(), 12)
-
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        pygame.event.set_blocked(pygame.MOUSEMOTION)  # We do not need
+            self.screen = pygame.display.set_mode((self.width, self.height))
+            pygame.event.set_blocked(pygame.MOUSEMOTION)  # We do not need
         # mouse movement
         # events, so we
         # block them.
@@ -160,18 +163,19 @@ class TetrisApp(object):
         self.level = 1
         self.score = 0
         self.lines = 0
-        pygame.time.set_timer(pygame.USEREVENT + 1, 1000)
+        pygame.time.set_timer(pygame.USEREVENT + 1, self.unitTime)
 
     def disp_msg(self, msg, topleft):
         x, y = topleft
         for line in msg.splitlines():
-            self.screen.blit(
-                self.default_font.render(
-                    line,
-                    False,
-                    (255, 255, 255),
-                    (0, 0, 0)),
-                (x, y))
+            if self.minimal_gui:
+                self.screen.blit(
+                    self.default_font.render(
+                        line,
+                        False,
+                        (255, 255, 255),
+                        (0, 0, 0)),
+                    (x, y))
             y += 14
 
     def center_msg(self, msg):
@@ -183,9 +187,10 @@ class TetrisApp(object):
             msgim_center_x //= 2
             msgim_center_y //= 2
 
-            self.screen.blit(msg_image, (
-                self.width // 2 - msgim_center_x,
-                self.height // 2 - msgim_center_y + i * 22))
+            if self.minimal_gui:
+                self.screen.blit(msg_image, (
+                    self.width // 2 - msgim_center_x,
+                    self.height // 2 - msgim_center_y + i * 22))
 
     def draw_matrix(self, matrix, offset):
         off_x, off_y = offset
@@ -209,8 +214,8 @@ class TetrisApp(object):
         self.score += linescores[n] * self.level
         if self.lines >= self.level * 6:
             self.level += 1
-            newdelay = 1000 - 50 * (self.level - 1)
-            newdelay = 100 if newdelay < 100 else newdelay
+            newdelay = self.unitTime - self.unitTime/20 * (self.level - 1)
+            newdelay = self.unitTime/10 if newdelay < self.unitTime/10 else newdelay
             pygame.time.set_timer(pygame.USEREVENT + 1, newdelay)
 
     def move(self, delta_x):
@@ -296,7 +301,8 @@ class TetrisApp(object):
         limit = 0
 
         while 1:
-            self.screen.fill((0, 0, 0))
+            if self.minimal_gui:
+                self.screen.fill((0, 0, 0))
             if self.gameover:
                 self.center_msg("""Game Over!\nYour score: %d
 Press space to continue""" % self.score)
@@ -326,8 +332,12 @@ Press space to continue""" % self.score)
             # TODO here is where we will change the game
 
             if limit < 5:
+
                 move = self.player_ai.play(self.board)
-                key_actions[move]()  # TODO currently just moves left
+                assert len(self.board) == 23
+                assert len(self.board[0]) == 10
+                if move != "NOTHING":
+                    key_actions[move]()  # TODO currently just moves left
                 limit += 1
 
             for event in pygame.event.get():

@@ -189,5 +189,3 @@ def print_nn(nn):
             print nn[i][j]
         print
 
-
-#tester()

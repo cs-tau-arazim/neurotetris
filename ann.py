@@ -34,16 +34,17 @@ class Ann:
         input_vector = []
         for i in xrange(len(board) - 1):         # the last line is irreleveant
             for j in xrange(len(board[i])):
-                input_vector.append(board[i][j])
+                input_vector.append(self.to_binary_rep(board[i][j]))
         return np.matrix([input_vector]).getT()
 
-
-
+    def to_binary_rep(self, n):
+        if n > 0:
+            return 1
+        return 0
     # returns the index of the maximum
     def get_max_index(self,vector):
-        vector_as_list = vector.tolist()
+        vector_as_list = vector.getT().tolist()
         vector_as_list = vector_as_list[0]
-        index = 0
         m = max(vector_as_list)
         for i in xrange(len(vector_as_list)):
             if vector_as_list[i] == m:
@@ -54,7 +55,8 @@ class Ann:
 
     # returns the key that is pressed based on the input
     def play(self, board):
-        buttons = ['LEFT', 'RIGHT', 'UP', 'NOTHING']
+        buttons = ['NOTHING', 'LEFT', 'RIGHT', 'UP']
         input_vector = self.parse_board(board)
         out_vector = self.get_output(input_vector)
-        return buttons[self.get_max_index(out_vector)]
+        i = self.get_max_index(out_vector)
+        return buttons[i]

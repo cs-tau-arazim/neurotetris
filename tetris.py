@@ -123,12 +123,13 @@ def new_board():
 
 
 class TetrisApp(object):
-    def __init__(self):
+    def __init__(self, player_ai):  # start game with given ann
         pygame.init()
         pygame.key.set_repeat(250, 25)
         self.width = cell_size * (cols + 6)
         self.height = cell_size * rows
         self.rlim = cell_size * cols
+        self.player_ai = player_ai  # new
         self.bground_grid = [[8 if x % 2 == y % 2 else 0 for x in xrange(cols)] for y in xrange(rows)]
 
         self.default_font = pygame.font.Font(
@@ -277,8 +278,6 @@ class TetrisApp(object):
             self.gameover = False
 
     def run(self):
-        player = ann.Ann(rows, cols)
-
         key_actions = {
             'ESCAPE': self.quit,
             'LEFT': lambda: self.move(-1),
@@ -299,6 +298,7 @@ class TetrisApp(object):
             if self.gameover:
                 self.center_msg("""Game Over!\nYour score: %d
 Press space to continue""" % self.score)
+                return self.score
             else:
                 if self.paused:
                     self.center_msg("Paused")
@@ -322,7 +322,7 @@ Press space to continue""" % self.score)
             pygame.display.update()
 
             # TODO here is where we will change the game
-            move = player.play(self.board)
+            move = self.player_ai.play(self.board)
             key_actions[move]() # TODO currently just moves left
 
             for event in pygame.event.get():
@@ -339,7 +339,3 @@ Press space to continue""" % self.score)
 
             dont_burn_my_cpu.tick(maxfps)
 
-
-if __name__ == '__main__':
-    App = TetrisApp()
-    App.run()

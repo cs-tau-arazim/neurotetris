@@ -1,8 +1,7 @@
 import ann, tetris, generic, numpy
 
 if __name__ == '__main__':
-    #generation_size = generic.generation_size
-    generation_size = 3
+    generation_size = generic.generation_size
 
     unitTime = 1000
     minimal_gui = True

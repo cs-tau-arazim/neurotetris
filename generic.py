@@ -10,7 +10,10 @@ proportion = 0.3  # TODO change?
 
 # initializes @generation_size random neural networks
 def init():
-    pass
+    #TODO change
+    matList = [[[]]]
+    return [matList for i in xrange(generation_size)]
+
 
 
 # creates a new child from the parents

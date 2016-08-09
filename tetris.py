@@ -293,6 +293,8 @@ class TetrisApp(object):
         self.paused = False
 
         dont_burn_my_cpu = pygame.time.Clock()
+        limit = 0
+
         while 1:
             self.screen.fill((0, 0, 0))
             if self.gameover:
@@ -322,12 +324,17 @@ Press space to continue""" % self.score)
             pygame.display.update()
 
             # TODO here is where we will change the game
-            move = self.player_ai.play(self.board)
-            key_actions[move]() # TODO currently just moves left
+
+            if limit < 5:
+                move = self.player_ai.play(self.board)
+                key_actions[move]()  # TODO currently just moves left
+                limit += 1
 
             for event in pygame.event.get():
                 if event.type == pygame.USEREVENT + 1:
                     self.drop(False)
+                    limit = 0
+
                 elif event.type == pygame.QUIT:
                     self.quit()
 

@@ -2,9 +2,10 @@ __author__ = 'Tom'
 
 import random
 import operator
+import math
 
 generation_size = 100  # TODO change?
-proportion = 0.3 # TODO change?
+proportion = 0.3  # TODO change?
 
 
 # initializes @generation_size random neural networks
@@ -24,52 +25,83 @@ def mutation(child):
 
 # selects @proportion of the existing population to breed a new generation
 # last_gen is a dict with (NN, fitness)
+# O(
 def selection(last_gen):
+
+    last_gen = {}  # TODO REMOVE
+    size = 1/proportion
+
+    potential_parents = {}
+    while len(last_gen) > 0:
+        tournament = {}
+        tour_size = min(size, len(last_gen))
+        for i in xrange(tour_size):
+            chosen_nn = random.choice(last_gen)
+            tournament.update({chosen_nn})
+            last_gen.pop(chosen_nn)
+
+        best_fit = -1
+
+        for nn in tournament:
+            if tournament[nn] > best_fit:
+                best_fit = tournament.get(nn)
+                best_nn = nn
+
+            potential_parents.update({best_nn})
+
+    return potential_parents
+
+
+# selects an individual parent to breed a new child
+# potential_parents is a dict with (NN, fitness)
+# fitness proportionate selection
+# O(nlogn)
+def select_parent_fitness_proportionate(potential_parents):
     fit_sum = 0
-    last_gen = {}
 
-    for nn in last_gen:
-        sum += last_gen.get(nn)
+    for nn in potential_parents:
+        sum += potential_parents.get(nn)
 
-    for nn in last_gen:
-        last_gen[nn] /= sum
+    for nn in potential_parents:
+        potential_parents[nn] /= sum
 
-    last_gen = sorted(last_gen.items(), key=operator.itemgetter(0), reverse=True)
+    potential_parents = sorted(potential_parents.items(), key=operator.itemgetter(0), reverse=True)
 
-    for i in xrange(len(last_gen)-1):
-        last_gen[i+1] += last_gen [i]
+    for i in xrange(len(potential_parents) - 1):
+        potential_parents[i + 1] += potential_parents[i]
 
     r = random.uniform(0, 1)
 
+    # search TODO binary?
     i = 0
-    while i < len(last_gen) and last_gen[i] < r:
+    while i < len(potential_parents) and potential_parents[i] < r:
         i += 1
 
-    # TODO complete
-
-
-   
-
+    return potential_parents[i]
 
 
 # selects an individual parent to breed a new child
 # potential_parents is a dict with (NN, fitness)
 # tournament selection
+# O(nlogn)
 def select_parent(potential_parents):
+    potential_parents = {}  # TODO REMOVE
+    size = 10  # TODO change?
+
     tournament = {}
-    size = 10 # TODO change?
 
     for i in xrange(size):
-        tournament.update({random.choice(potential_parents)})
+        chosen_nn = random.choice(potential_parents)
+        tournament.update({chosen_nn})
 
     best_fit = -1
 
     for nn in tournament:
-        if tournament.get(nn) > best_fit:
+        if tournament[nn] > best_fit:
             best_fit = tournament.get(nn)
             best_nn = nn
-    return nn
 
+    return best_nn
 
 # uses select, crossover and mutation to generate a new generation
 # last_gen is a dict with (NN, fitness)
@@ -83,6 +115,3 @@ def generate_new_gen(last_gen):
         mutation(child)
         new_gen.append(child)
     return new_gen
-
-
-

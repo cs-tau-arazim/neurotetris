@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
         """
         for i in xrange(generation_size):
-            App = tetris.TetrisApp(ai_players[i], unitTime, minimal_gui, minimal_ai)
+            App = tetris.TetrisApp(ai_players[i], unitTime, True, minimal_ai)
             # optional TODO - play 10 games for each AI
             gameRes = App.run()
             # print "Evaluation for AI #" + str(i) + ": " + str(gameRes)

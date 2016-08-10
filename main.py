@@ -4,11 +4,9 @@ if __name__ == '__main__':
     generation_size = generic.generation_size
 
     unitTime = 10
-    minimal_gui = False
+    minimal_gui = True
     minimal_ai = True
 
-    matrix = []
-    results = []
     ai_players_data = generic.init()
     generation = 1
 
@@ -24,18 +22,33 @@ if __name__ == '__main__':
             gameRes = App.run()
             # print "Evaluation for AI #" + str(i) + ": " + str(gameRes)
             results.append(gameRes)
+        print results
 
+        results = []
+
+        # Play the game for each ai
+        for i in xrange(generation_size):
+            App = tetris.TetrisApp(ai_players[i], unitTime, minimal_gui, minimal_ai)
+            # optional TODO - play 10 games for each AI
+            gameRes = App.run()
+            # print "Evaluation for AI #" + str(i) + ": " + str(gameRes)
+            results.append(gameRes)
+        print results
+
+
+        """
         maxInt = 0
-        maxRes = max(results)
-        print [int(n) for n in sorted(results)]
-        for i in xrange(len(results)):
-            if results[i] == maxRes:
-                maxInt = i
-                break
+        maxRes =(max(results))
 
+        print [int(n) for n in sorted(results)]
+
+        maxInt = results.index(maxRes)
+        print maxInt
+        """
         # BEST
-        App = tetris.TetrisApp(ai_players[maxInt], unitTime, True, minimal_ai)
-        App.run()
+        #App = tetris.TetrisApp(ai_players[maxInt], unitTime, False, minimal_ai)
+        #res1 = App.run()
+        #print res1
 
         result_list = [(ai_players_data[i], results[i]) for i in xrange(generation_size)]
         ai_players_data = generic.generate_new_gen(result_list)

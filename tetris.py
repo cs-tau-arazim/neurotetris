@@ -83,6 +83,8 @@ tetris_shapes = [
      [7, 7]]
 ]
 
+stone_arr = [i % 6 for i in xrange(1000)]
+
 
 def rotate_clockwise(shape):
     return [[shape[y][x]
@@ -134,6 +136,7 @@ class TetrisApp(object):
         self.unitTime = unitTime
         self.minimal_gui = minimal_gui
 
+        self.stone_count = 0
         self.shape_index = 0
         self.shape_rotate = 0
         self.evaluate = 0
@@ -148,7 +151,9 @@ class TetrisApp(object):
         # mouse movement
         # events, so we
         # block them.
-        self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
+        # TODO self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
+
+
         self.init_game()
 
     def new_stone(self):
@@ -158,7 +163,13 @@ class TetrisApp(object):
 
         self.shape_index = tetris_shapes.index(self.stone)
 
-        self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
+        #self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
+        #TODO
+        print self.stone_count
+        self.next_stone = tetris_shapes[stone_arr[self.stone_count]]
+        self.stone_count += 1
+        
+
         self.stone_x = int(cols / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
         # self.evaluate += 1 TODO reward for stones?

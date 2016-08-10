@@ -21,7 +21,6 @@ class Ann:
         length = len(self.weight_matrices)
         for i in xrange(length - 1):
             output = self.weight_matrices[i] * output
-            print output.getT() , "the number is " +str(i)
             output = self.check_threshold(output)
 
         return self.weight_matrices[length - 1] * output
@@ -66,7 +65,7 @@ class Ann:
         m = max(vector_as_list)
         copy_vec = vector_as_list[:]
         copy_vec.remove(m)
-        if (m <= determination_factor*max(copy_vec) or m <= 0):
+        if (m <= determination_factor*max(copy_vec) or m <= 0) and vector_as_list.index(m) != 1:
             return 0
         for i in xrange(len(vector_as_list)):
             if vector_as_list[i] == m:

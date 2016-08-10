@@ -29,6 +29,7 @@ num_of_keep = 5
 def create_nn():
 
 
+    """
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
           [[0 for i in xrange(l1_size)] for i in xrange(l2_size)],\
           [[0 for i in xrange(l2_size)] for i in xrange(output_size)]]
@@ -36,7 +37,7 @@ def create_nn():
 
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
           [[0 for i in xrange(l1_size)] for i in xrange(output_size)]]
-    """
+
     #random.gauss(expected_mutation,std)
     #nn = [[[0 for i in xrange(input_size)] for i in xrange(output_size)]]
 
@@ -164,7 +165,7 @@ def select_parent_fitness_proportionate(potential_parents):
 # tournament selection
 # O(size)
 def select_parent(potential_parents):
-    size = 10  # TODO change?
+    size = 3  # TODO change?
 
     tournament = []
 
@@ -211,7 +212,6 @@ def tester():
         gen[i] = (gen[i],5)
 
     for i in xrange(10):
-        print i
         gen = generate_new_gen(gen)
         for i in xrange(len(gen)):
             gen[i] = (gen[i],5)
@@ -231,5 +231,5 @@ def print_nn(nn):
         print
 
 
-testInit()
+#testInit()
 

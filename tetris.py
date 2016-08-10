@@ -49,6 +49,11 @@ rows = 22
 maxfps = 30
 playes_per_tick = 1
 
+a = -0.510066
+b = 0.760666
+c = -0.35663
+d = -0.184483
+
 colors = [
     (0, 0, 0),
     (255, 85, 85),
@@ -126,11 +131,11 @@ def new_board():
 
 
 class TetrisApp(object):
-    def __init__(self, player_ai, unitTime, minimal_gui, minimal_ai):  # start game with given ann
+    def __init__(self, player_ai, unitTime, minimal_gui, minimal_ai, seed):  # start game with given ann
         if minimal_gui:
             pygame.init()
             pygame.key.set_repeat(250, 25)
-        random.seed(57565)
+        random.seed(seed)
         self.width = cell_size * (cols + 6)
         self.height = cell_size * rows
         self.rlim = cell_size * cols
@@ -142,6 +147,8 @@ class TetrisApp(object):
         self.shape_index = 0
         self.shape_rotate = 0
         self.evaluate = 0
+
+        self.lines_cleared = 0
 
         self.bground_grid = [[8 if x % 2 == y % 2 else 0 for x in xrange(cols)] for y in xrange(rows)]
 
@@ -156,8 +163,49 @@ class TetrisApp(object):
 
         self.next_stone = random.choice(tetris_shapes)
 
+        # todo new method
 
         self.init_game()
+
+    def f_holes(self):
+        holes = 0
+        for i in range(3, len(self.board)): # todo 3?
+            for j in range(len(self.board[0])):
+                if self.board[i][j] == 0:
+                    if self.board[i-1][j] > 0:
+                        holes += 1
+        return holes
+
+    def f_aggheight(self):
+        agg_height = 0
+        for j in range(len(self.board[0])):
+            i = 0
+            while self.board[i][j] == 0:
+                i += 1
+            agg_height += 22 - i
+        return agg_height
+
+    def f_rows(self):
+        rows_num = 0
+        for row in self.board[:-1]:
+            if 0 not in row:
+                rows_num += 1
+        return rows_num
+
+    def f_bumpiness(self):
+        bumpiness = 0
+        prev_bump = 0
+
+        for j in range(len(self.board[0])):
+            i = 0
+            while self.board[i][j] == 0:
+                i += 1
+            if j == 0:
+                prev_bump = 22 - i
+            else:
+                bumpiness += abs(prev_bump - (22 - i))
+                prev_bump = 22 - i
+        return bumpiness
 
     def new_stone(self):
         self.shape_rotate = 0
@@ -233,7 +281,8 @@ class TetrisApp(object):
         linescores = [0, 40, 100, 300, 1200]
         self.lines += n
         self.score += linescores[n] * self.level
-        self.evaluate += linescores[n] * self.level * 5
+        self.lines_cleared += n
+        # todo self.evaluate += linescores[n] * self.level * 5
 
         if self.lines >= self.level * 6:
             self.level += 1
@@ -271,12 +320,16 @@ class TetrisApp(object):
             if check_collision(self.board,
                                self.stone,
                                (self.stone_x, self.stone_y)):
-                self.evaluate_move()  # todo evaluate
+
+                # TODO REMEMBER
 
                 self.board = join_matrixes(
                     self.board,
                     self.stone,
                     (self.stone_x, self.stone_y))
+
+                self.evaluate_move()  # todo evaluate
+
                 self.new_stone()
                 cleared_rows = 0
                 while True:
@@ -293,6 +346,9 @@ class TetrisApp(object):
         return False
 
     def evaluate_move(self):
+        self.evaluate += a*self.f_aggheight() + b*self.f_bumpiness() + c*self.f_holes() + d*self.f_rows()
+
+        """
         blocked = 0  # todo check can be too negative
 
         for i in range(len(self.stone[0])):
@@ -301,7 +357,11 @@ class TetrisApp(object):
                 blocked += 1
                 j += 1
 
-        self.evaluate += 10 / (2 ** blocked)
+        if blocked == 0:
+            self.evaluate += self.stone_y
+        else:
+            self.evaluate -= blocked * self.stone_y / 10
+        """
 
     def insta_drop(self):
         if not self.gameover and not self.paused:
@@ -352,8 +412,8 @@ class TetrisApp(object):
                 if self.minimal_gui:
                     self.center_msg("""Game Over!\nYour score: %d
     Press space to continue""" % self.score)
-                #self.evaluate_board()
-                return self.evaluate
+                # self.evaluate_board()
+                return max(self.evaluate, 1)
             else:
                 if self.paused:
                     if self.minimal_gui:

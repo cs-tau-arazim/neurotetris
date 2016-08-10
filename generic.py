@@ -5,7 +5,9 @@ import operator
 import math
 
 layers = 3
+
 generation_size = 100 # TODO change?
+
 proportion = 0.3  # TODO change?
 input_size = 234
 l1_size = 50  # TODO change?

@@ -6,20 +6,23 @@ import math
 
 layers = 3
 
-generation_size = 150 # TODO change?
+generation_size = 200 # TODO change?
 
 proportion = 0.3  # TODO change?
-input_size = 234
-l1_size = 10  # TODO change?
+#input_size = 234
+input_size = 223
+l1_size = 6  # TODO change?
 l2_size = 6 # TODO change?
-output_size = 4
+#output_size = 4
+output_size = 14
 
 
-mutation_prob = 0.1
-change_prob = 0.9
+mutation_prob = 0.4
+change_prob = 0.95
 
 expected_mutation = 1.0
-std = 0.1
+L1_mutation_factor = 0.15
+std = 0.3
 std_change = 0.08
 
 num_of_keep = 5
@@ -28,7 +31,7 @@ num_of_keep = 5
 # creates a single random nn
 def create_nn():
 
-
+    """
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
           [[0 for i in xrange(l1_size)] for i in xrange(l2_size)],\
           [[0 for i in xrange(l2_size)] for i in xrange(output_size)]]
@@ -36,7 +39,7 @@ def create_nn():
 
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
           [[0 for i in xrange(l1_size)] for i in xrange(output_size)]]
-    """
+
     #random.gauss(expected_mutation,std)
     #nn = [[[0 for i in xrange(input_size)] for i in xrange(output_size)]]
 
@@ -82,7 +85,16 @@ def crossover2(parent1, parent2):
 
 # creates mutations in the child
 def mutation(child):
-    for i in xrange(len(child)):
+    for j in xrange(len(child[0])):
+        for k in range(len(child[0][j])):
+            r = random.uniform(0, 1)
+            if r < mutation_prob:
+                r = random.uniform(0, 1)
+                if r > change_prob:
+                    child[0][j][k] = L1_mutation_factor*random.gauss(expected_mutation,std)
+                else:
+                    child[0][j][k] += L1_mutation_factor*random.gauss(0,std_change)
+    for i in xrange(1,len(child)):
         for j in xrange(len(child[i])):
             for k in range(len(child[i][j])):
                 r = random.uniform(0, 1)
@@ -231,5 +243,4 @@ def print_nn(nn):
         print
 
 
-testInit()
 

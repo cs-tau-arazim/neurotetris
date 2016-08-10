@@ -1,6 +1,8 @@
 import numpy as np
 
-determination_factor = 2.0
+determination_factor = 1.4
+board_width = 10
+rotations_num = 4
 
 def threshold_function(x):
     if x>0.5:
@@ -21,10 +23,12 @@ class Ann:
         length = len(self.weight_matrices)
         for i in xrange(length - 1):
             output = self.weight_matrices[i] * output
-            print output.getT() , "the number is " +str(i)
+            #if i == 1 and max(output.getT().tolist()[0])>1:
+            #
             output = self.check_threshold(output)
-
-        return self.weight_matrices[length - 1] * output
+        output = self.weight_matrices[length - 1] * output
+        #print output.getT().tolist()[0]
+        return output
 
     # returns a binary vector of the nuerons being fired
     def check_threshold(self, v):
@@ -77,9 +81,58 @@ class Ann:
 
     # returns the key that is pressed based on the input
     # index - 3 bit, rotate - 2 bit,  x - 4 bit, y - 5 bit
-    def play(self, board, index, rotate, x, y):
+    def play2(self, board, index, rotate, x, y):
         buttons = ['NOTHING', 'UP', 'RIGHT','LEFT' ]
         input_vector = self.parse_input(board, index, rotate, x, y)
         out_vector = self.get_output(input_vector)
         i = self.get_choice(out_vector)
         return buttons[i]
+
+    def get_rotate_and_x_choice(self,vector,rotate,x):
+        vector_as_list = vector.getT().tolist()
+        vector_as_list = vector_as_list[0]
+        x_cor = vector_as_list[:board_width]
+        rotations = vector_as_list[-rotations_num:]
+        m_x = max(x_cor)
+        m_rotate = max(rotations)
+        res_x,res_rot = x_cor.index(m_x), rotations.index(m_rotate)
+
+        copy_x_cor = x_cor[:]
+        copy_x_cor.remove(m_x)
+        if (m_x <= determination_factor*max(copy_x_cor) or m_x <= 0):
+            res_x = x
+        """
+        copy_rot = rotations[:]
+        copy_rot.remove(m_rotate)
+        if (m_rotate <= determination_factor*max(copy_rot) or m_rotate <= 0):
+            res_rot = rotate
+            """
+
+        return (res_x, res_rot)
+
+    def play(self, board, index, rotate, x, y):
+        buttons = ['NOTHING', 'UP', 'RIGHT','LEFT' ]
+        input_vector = self.parse_input2(board, index)
+        out_vector = self.get_output(input_vector)
+
+        x_res,rot_res = self.get_rotate_and_x_choice(out_vector,rotate,x)
+        if x > x_res:
+            return 'LEFT'
+        if x < x_res:
+            return 'RIGHT'
+        if not rot_res == rotate:
+            return 'UP'
+        return 'NOTHING'
+
+# converts the board into it's input represetation
+    def parse_input2(self, board, index):
+        input_vector = []
+        for i in xrange(len(board) - 1):         # the last line is irreleveant
+            for j in xrange(len(board[i])):
+                input_vector.append(self.to_binary_rep(board[i][j]))
+        for i in xrange(3):
+            input_vector.append(index%2)
+            index /= 2
+        return np.matrix([input_vector]).getT()
+
+

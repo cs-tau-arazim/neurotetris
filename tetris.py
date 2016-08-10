@@ -130,7 +130,7 @@ class TetrisApp(object):
         if minimal_gui:
             pygame.init()
             pygame.key.set_repeat(250, 25)
-        random.seed(57565)
+        random.seed(575765)
         self.width = cell_size * (cols + 6)
         self.height = cell_size * rows
         self.rlim = cell_size * cols
@@ -138,6 +138,7 @@ class TetrisApp(object):
         self.unitTime = unitTime
         self.minimal_gui = minimal_gui
 
+        self.count_rotate = 0;
         self.stone_count = 0
         self.shape_index = 0
         self.shape_rotate = 0
@@ -309,7 +310,8 @@ class TetrisApp(object):
                 pass
 
     def rotate_stone(self):
-        self.evaluate+=0
+        self.evaluate+=0.01
+        self.count_rotate += 1
         if not self.gameover and not self.paused:
             self.shape_rotate = (self.shape_rotate + 1) % 4
             new_stone = rotate_clockwise(self.stone)
@@ -353,6 +355,8 @@ class TetrisApp(object):
                     self.center_msg("""Game Over!\nYour score: %d
     Press space to continue""" % self.score)
                 #self.evaluate_board()
+                if self.count_rotate == 0:
+                    self.evaluate = 0
                 return self.evaluate
             else:
                 if self.paused:
@@ -438,10 +442,8 @@ class TetrisApp(object):
             for bit in self.board[i]:
                 if bit > 0:
                     count += 1
-            self.evaluate += (1.4 ** i) * count
+            self.evaluate += ((2.0 ** count) * i)/100
 
-            #n = self.get_max_length(line)
-            #self.evaluate += 1.4 ** n if n != 0 else 0
 
     def get_max_length(self, line):
         current = 0

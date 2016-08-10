@@ -83,7 +83,7 @@ tetris_shapes = [
      [7, 7]]
 ]
 
-stone_arr = [i % 6 for i in xrange(1000)]
+#stone_arr = [i % 6 for i in xrange(1000)]
 
 
 def rotate_clockwise(shape):
@@ -152,14 +152,9 @@ class TetrisApp(object):
         # mouse movement
         # events, so we
         # block them.
-<<<<<<< Updated upstream
 
         self.next_stone = random.choice(tetris_shapes)
-=======
-        # TODO self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
-        self.next_stone = tetris_shapes[stone_arr[self.stone_count]]
-        self.stone_count += 1
->>>>>>> Stashed changes
+
 
         self.init_game()
 
@@ -170,16 +165,7 @@ class TetrisApp(object):
 
         self.shape_index = tetris_shapes.index(self.stone)
 
-<<<<<<< Updated upstream
-
         self.next_stone = random.choice(tetris_shapes)
-=======
-        #self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
-        #TODO
-        self.next_stone = tetris_shapes[stone_arr[self.stone_count]]
-        self.stone_count += 1
-        
->>>>>>> Stashed changes
 
         self.stone_x = int(cols / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
@@ -246,7 +232,7 @@ class TetrisApp(object):
         linescores = [0, 40, 100, 300, 1200]
         self.lines += n
         self.score += linescores[n] * self.level
-        self.evaluate += linescores[n] * self.level * 500
+        self.evaluate += linescores[n] * self.level * 5
 
         if self.lines >= self.level * 6:
             self.level += 1
@@ -284,6 +270,8 @@ class TetrisApp(object):
             if check_collision(self.board,
                                self.stone,
                                (self.stone_x, self.stone_y)):
+                self.evaluate_move()  # todo evaluate
+
                 self.board = join_matrixes(
                     self.board,
                     self.stone,
@@ -302,6 +290,17 @@ class TetrisApp(object):
                 self.add_cl_lines(cleared_rows)
                 return True
         return False
+
+    def evaluate_move(self):
+        blocked = 0  # todo check can be too negative
+
+        for i in range(len(self.stone[0])):
+            j = self.stone_y + 1
+            while j < 22 and self.board[j][i + self.stone_x] == 0:
+                blocked += 1
+                j += 1
+
+        self.evaluate += 10 / (2 ** blocked)
 
     def insta_drop(self):
         if not self.gameover and not self.paused:
@@ -351,7 +350,7 @@ class TetrisApp(object):
                 if self.minimal_gui:
                     self.center_msg("""Game Over!\nYour score: %d
     Press space to continue""" % self.score)
-                self.evaluate_board()
+                #self.evaluate_board()
                 return self.evaluate
             else:
                 if self.paused:
@@ -378,65 +377,60 @@ class TetrisApp(object):
 
             if self.minimal_gui:
                 pygame.display.update()
+                pygame.time.wait(self.unitTime)
 
             # TODO here is where we will change the game
 
-<<<<<<< Updated upstream
             for i in xrange(2):
                 #move = self.player_ai.play(self.board)
                 #boardCopy = [[self.board[i][j] for j in xrange(len(self.board[0]))] for i in xrange(len(self.board))]
                 #move = self.player_ai.play(join_matrixes(boardCopy, self.stone, (self.stone_x, self.stone_y)))
-=======
-            for i in xrange(3):
->>>>>>> Stashed changes
 
                 move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
                 assert len(self.board) == 23
                 assert len(self.board[0]) == 10
                 if move != "NOTHING":
                     key_actions[move]()
-            if not self.minimal_gui:
-                self.drop(False)
+            ##if not self.minimal_gui:
+            self.drop(False)
 
-            else:
+            """
+            while limit < 2:
+                move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
+                assert len(self.board) == 23
+                assert len(self.board[0]) == 10
+                if move != "NOTHING":
+                    key_actions[move]()
 
-<<<<<<< Updated upstream
-                while limit < 2:
-=======
-                """if limit < 5:
->>>>>>> Stashed changes
-                    move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
-                    assert len(self.board) == 23
-                    assert len(self.board[0]) == 10
-                    if move != "NOTHING":
-                        key_actions[move]()
-<<<<<<< Updated upstream
-                    limit += 1
-=======
-                    limit += 1"""
-                for event in pygame.event.get():
-                    if event.type == pygame.USEREVENT + 1:
-                        self.drop(False)
-                        limit = 0
->>>>>>> Stashed changes
+                limit += 1
 
+            self.drop(False)
+            limit = 0
 
-                #for event in pygame.event.get():
-                    #if event.type == pygame.USEREVENT + 1:
-                self.drop(False)
-                limit = 0
+            """
+
+            """
+            for event in pygame.event.get():
+                if event.type == pygame.USEREVENT + 1:
+                    self.drop(False)
+                    limit = 0
+
+            #for event in pygame.event.get():
+                #if event.type == pygame.USEREVENT + 1:
+            self.drop(False)
+            limit = 0
+
+                elif event.type == pygame.QUIT:
+                    self.quit()
+
+                elif event.type == pygame.KEYDOWN:
+                    for key in key_actions:
+                        if event.key == eval("pygame.K_"
+                                                     + key):
+                            key_actions[key]()
                 """
-                    elif event.type == pygame.QUIT:
-                        self.quit()
 
-                    elif event.type == pygame.KEYDOWN:
-                        for key in key_actions:
-                            if event.key == eval("pygame.K_"
-                                                         + key):
-                                key_actions[key]()
-                    """
-
-                dont_burn_my_cpu.tick(maxfps)
+            #dont_burn_my_cpu.tick(maxfps)
 
     def evaluate_board(self):
         for i in range(len(self.board) - 1):

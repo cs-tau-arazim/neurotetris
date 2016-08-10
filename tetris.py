@@ -47,6 +47,7 @@ cell_size = 18
 cols = 10
 rows = 22
 maxfps = 30
+playes_per_tick = 1
 
 colors = [
     (0, 0, 0),
@@ -308,6 +309,7 @@ class TetrisApp(object):
                 pass
 
     def rotate_stone(self):
+        self.evaluate+=0
         if not self.gameover and not self.paused:
             self.shape_rotate = (self.shape_rotate + 1) % 4
             new_stone = rotate_clockwise(self.stone)
@@ -381,8 +383,7 @@ class TetrisApp(object):
 
             # TODO here is where we will change the game
 
-            for i in xrange(2):
-                #move = self.player_ai.play(self.board)
+            for i in xrange(playes_per_tick):
                 #boardCopy = [[self.board[i][j] for j in xrange(len(self.board[0]))] for i in xrange(len(self.board))]
                 #move = self.player_ai.play(join_matrixes(boardCopy, self.stone, (self.stone_x, self.stone_y)))
 
@@ -430,7 +431,6 @@ class TetrisApp(object):
                             key_actions[key]()
                 """
 
-            #dont_burn_my_cpu.tick(maxfps)
 
     def evaluate_board(self):
         for i in range(len(self.board) - 1):

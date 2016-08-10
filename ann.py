@@ -1,13 +1,12 @@
 import numpy as np
 
-determination_factor = 2
-
-def threshold_function2(x):
-    return 1.0 / (1 + np.exp(-20.0 * (x - 1)))
+determination_factor = 2.0
 
 def threshold_function(x):
-    return x
-
+    if x>0.5:
+        return 1
+    return 0
+    #return 1.0 / (1 + np.exp(-20.0 * (x - 1)))
 
 class Ann:
     def __init__(self, matrices):
@@ -22,6 +21,7 @@ class Ann:
         length = len(self.weight_matrices)
         for i in xrange(length - 1):
             output = self.weight_matrices[i] * output
+            print output.getT() , "the number is " +str(i)
             output = self.check_threshold(output)
 
         return self.weight_matrices[length - 1] * output
@@ -64,9 +64,10 @@ class Ann:
         vector_as_list = vector.getT().tolist()
         vector_as_list = vector_as_list[0]
         m = max(vector_as_list)
-        for i in xrange(len(vector_as_list)):
-            if m < determination_factor*vector_as_list[i]:
-                return 0
+        copy_vec = vector_as_list[:]
+        copy_vec.remove(m)
+        if (m <= determination_factor*max(copy_vec) or m <= 0):
+            return 0
         for i in xrange(len(vector_as_list)):
             if vector_as_list[i] == m:
                 return i
@@ -77,10 +78,8 @@ class Ann:
     # returns the key that is pressed based on the input
     # index - 3 bit, rotate - 2 bit,  x - 4 bit, y - 5 bit
     def play(self, board, index, rotate, x, y):
-        buttons = ['NOTHING', 'LEFT', 'RIGHT', 'UP']
+        buttons = ['NOTHING', 'UP', 'RIGHT','LEFT' ]
         input_vector = self.parse_input(board, index, rotate, x, y)
         out_vector = self.get_output(input_vector)
-        #print out_vector.getT()
         i = self.get_choice(out_vector)
-
         return buttons[i]

@@ -3,7 +3,7 @@ import ann, tetris, generic
 if __name__ == '__main__':
     generation_size = generic.generation_size
 
-    unitTime = 10
+    unitTime = 1000
     minimal_gui = False
     minimal_ai = True
 

@@ -6,20 +6,21 @@ import math
 
 layers = 3
 
-generation_size = 100 # TODO change?
+generation_size = 150 # TODO change?
 
 proportion = 0.3  # TODO change?
 input_size = 234
-l1_size = 50  # TODO change?
-l2_size = 10 # TODO change?
+l1_size = 10  # TODO change?
+l2_size = 6 # TODO change?
 output_size = 4
 
-mutation_prob = 0.01
+
+mutation_prob = 0.1
 change_prob = 0.9
 
-expected_mutation = 0.05
-std = 0.05
-std_change = 0.02
+expected_mutation = 1.0
+std = 0.1
+std_change = 0.08
 
 num_of_keep = 5
 
@@ -27,7 +28,7 @@ num_of_keep = 5
 # creates a single random nn
 def create_nn():
 
-    """
+
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
           [[0 for i in xrange(l1_size)] for i in xrange(l2_size)],\
           [[0 for i in xrange(l2_size)] for i in xrange(output_size)]]
@@ -35,7 +36,7 @@ def create_nn():
 
     nn = [[[0 for i in xrange(input_size)] for i in xrange(l1_size)],\
           [[0 for i in xrange(l1_size)] for i in xrange(output_size)]]
-
+    """
     #random.gauss(expected_mutation,std)
     #nn = [[[0 for i in xrange(input_size)] for i in xrange(output_size)]]
 
@@ -228,4 +229,7 @@ def print_nn(nn):
         for j in xrange(len(nn[i])):
             print nn[i][j]
         print
+
+
+testInit()
 

@@ -1,4 +1,4 @@
-import ann, tetris, generic, numpy
+import ann, tetris, generic
 
 if __name__ == '__main__':
     generation_size = generic.generation_size
@@ -35,7 +35,8 @@ if __name__ == '__main__':
 
         # BEST
         App = tetris.TetrisApp(ai_players[maxInt], unitTime, True, minimal_ai)
-        App.run()
+        res1 = App.run()
+        print res1
 
         result_list = [(ai_players_data[i], results[i]) for i in xrange(generation_size)]
         ai_players_data = generic.generate_new_gen(result_list)

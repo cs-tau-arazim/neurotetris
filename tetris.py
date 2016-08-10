@@ -40,7 +40,7 @@
 # THE SOFTWARE.
 
 import pygame, sys, ann
-from random import randrange as rand
+import random
 
 # The configuration
 cell_size = 18
@@ -62,8 +62,8 @@ colors = [
 
 # Define the shapes of the single parts
 tetris_shapes = [
-    [[1, 1, 1],
-     [0, 1, 0]],
+    [[0, 1, 0],
+     [1, 1, 1]],
 
     [[0, 2, 2],
      [2, 2, 0]],
@@ -127,6 +127,7 @@ class TetrisApp(object):
         if minimal_gui:
             pygame.init()
             pygame.key.set_repeat(250, 25)
+        random.seed(57565)
         self.width = cell_size * (cols + 6)
         self.height = cell_size * rows
         self.rlim = cell_size * cols
@@ -148,7 +149,7 @@ class TetrisApp(object):
         # mouse movement
         # events, so we
         # block them.
-        self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
+        self.next_stone = random.choice(tetris_shapes)
         self.init_game()
 
     def new_stone(self):
@@ -158,7 +159,7 @@ class TetrisApp(object):
 
         self.shape_index = tetris_shapes.index(self.stone)
 
-        self.next_stone = tetris_shapes[rand(len(tetris_shapes))]
+        self.next_stone = random.choice(tetris_shapes)
         self.stone_x = int(cols / 2 - len(self.stone[0]) / 2)
         self.stone_y = 0
         # self.evaluate += 1 TODO reward for stones?
@@ -359,7 +360,7 @@ class TetrisApp(object):
 
             # TODO here is where we will change the game
 
-            for i in xrange(1):
+            for i in xrange(2):
                 #move = self.player_ai.play(self.board)
                 #boardCopy = [[self.board[i][j] for j in xrange(len(self.board[0]))] for i in xrange(len(self.board))]
                 #move = self.player_ai.play(join_matrixes(boardCopy, self.stone, (self.stone_x, self.stone_y)))

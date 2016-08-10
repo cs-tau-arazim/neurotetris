@@ -5,7 +5,7 @@ import operator
 import math
 
 layers = 3
-generation_size = 100  # TODO change?
+generation_size = 100 # TODO change?
 proportion = 0.3  # TODO change?
 input_size = 234
 l1_size = 50  # TODO change?
@@ -15,9 +15,11 @@ output_size = 4
 mutation_prob = 0.05
 change_prob = 0.9
 
-expected_mutation = 0.5
-std = 0.5
-std_change = 0.2
+expected_mutation = 0.05
+std = 0.05
+std_change = 0.02
+
+num_of_keep = 5
 
 
 # creates a single random nn
@@ -61,6 +63,20 @@ def crossover(parent1, parent2):
     return child
 
 
+def crossover2(parent1, parent2):
+    child = create_nn()
+
+    for i in xrange(len(parent1)):
+        for j in xrange(len(parent1[i])):
+            for k in xrange(len(parent1[i][j])):
+                witch_p = bool(random.getrandbits(1))
+                if witch_p:
+                    child[i][j][k] = parent1[i][j][k]
+                else:
+                    child[i][j][k] = parent2[i][j][k]
+    return child
+
+
 # creates mutations in the child
 def mutation(child):
     for i in xrange(len(child)):
@@ -101,6 +117,16 @@ def selection(last_gen):
 
     return potential_parents
 
+
+def deterministic_selection(last_gen):
+
+    potential_parents = []
+
+    potential_parents = sorted(potential_parents, key=lambda x: x[1], reverse=True)
+
+    potential_parents = potential_parents[:proportion*len(potential_parents)]
+
+    return potential_parents
 
 # selects an individual parent to breed a new child
 # potential_parents is a dict with (NN, fitness)
@@ -156,9 +182,18 @@ def select_parent(potential_parents):
 # uses select, crossover and mutation to generate a new generation
 # last_gen is a dict with (NN, fitness)
 def generate_new_gen(last_gen):
-    potential_parents = selection(last_gen)
     new_gen = []
-    for i in xrange(generation_size):
+
+    sorted_last_gen = sorted(last_gen, key=lambda x: x[1], reverse=True)
+
+    #print([int(p[1]) for p in sorted_last_gen])
+    for i in xrange(num_of_keep):
+        new_gen.append(sorted_last_gen[i][0])
+    potential_parents = selection(last_gen)
+
+    #print([int(p[1]) for p in sorted(potential_parents, key=lambda x: x[1], reverse=True)])
+
+    for i in xrange(generation_size-num_of_keep):
         p1 = select_parent(potential_parents)
         p2 = select_parent(potential_parents)
         child = crossover(p1, p2)

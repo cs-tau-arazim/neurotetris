@@ -1,8 +1,12 @@
 import numpy as np
 
+determination_factor = 2
+
+def threshold_function2(x):
+    return 1.0 / (1 + np.exp(-20.0 * (x - 1)))
 
 def threshold_function(x):
-    return 1.0 / (1 + np.exp(-20.0 * (x - 1)))
+    return x
 
 
 class Ann:
@@ -56,10 +60,13 @@ class Ann:
 
 
     # returns the index of the maximum
-    def get_max_index(self,vector):
+    def get_choice(self,vector):
         vector_as_list = vector.getT().tolist()
         vector_as_list = vector_as_list[0]
         m = max(vector_as_list)
+        for i in xrange(len(vector_as_list)):
+            if m < determination_factor*vector_as_list[i]:
+                return 0
         for i in xrange(len(vector_as_list)):
             if vector_as_list[i] == m:
                 return i
@@ -73,6 +80,7 @@ class Ann:
         buttons = ['NOTHING', 'LEFT', 'RIGHT', 'UP']
         input_vector = self.parse_input(board, index, rotate, x, y)
         out_vector = self.get_output(input_vector)
-        i = self.get_max_index(out_vector)
+        #print out_vector.getT()
+        i = self.get_choice(out_vector)
 
         return buttons[i]

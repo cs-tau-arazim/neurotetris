@@ -14,7 +14,7 @@ l1_size = 50  # TODO change?
 l2_size = 10 # TODO change?
 output_size = 4
 
-mutation_prob = 0.05
+mutation_prob = 0.01
 change_prob = 0.9
 
 expected_mutation = 0.05
@@ -122,11 +122,11 @@ def selection(last_gen):
 
 def deterministic_selection(last_gen):
 
-    potential_parents = []
 
-    potential_parents = sorted(potential_parents, key=lambda x: x[1], reverse=True)
+    potential_parents = sorted(last_gen, key=lambda x: x[1], reverse=True)
 
-    potential_parents = potential_parents[:proportion*len(potential_parents)]
+    potential_parents = potential_parents[:int(proportion*len(potential_parents))]
+
 
     return potential_parents
 
@@ -191,7 +191,7 @@ def generate_new_gen(last_gen):
     #print([int(p[1]) for p in sorted_last_gen])
     for i in xrange(num_of_keep):
         new_gen.append(sorted_last_gen[i][0])
-    potential_parents = selection(last_gen)
+    potential_parents = deterministic_selection(last_gen)
 
     #print([int(p[1]) for p in sorted(potential_parents, key=lambda x: x[1], reverse=True)])
 

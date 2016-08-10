@@ -384,18 +384,20 @@ class TetrisApp(object):
 
             else:
 
-                if limit < 5:
+                while limit < 2:
                     move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
                     assert len(self.board) == 23
                     assert len(self.board[0]) == 10
                     if move != "NOTHING":
                         key_actions[move]()
                     limit += 1
-                for event in pygame.event.get():
-                    if event.type == pygame.USEREVENT + 1:
-                        self.drop(False)
-                        limit = 0
 
+
+                #for event in pygame.event.get():
+                    #if event.type == pygame.USEREVENT + 1:
+                self.drop(False)
+                limit = 0
+                """
                     elif event.type == pygame.QUIT:
                         self.quit()
 
@@ -404,7 +406,7 @@ class TetrisApp(object):
                             if event.key == eval("pygame.K_"
                                                          + key):
                                 key_actions[key]()
-
+                    """
 
                 dont_burn_my_cpu.tick(maxfps)
 

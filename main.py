@@ -22,11 +22,14 @@ if __name__ == '__main__':
             gameRes = App.run()
             # print "Evaluation for AI #" + str(i) + ": " + str(gameRes)
             results.append(gameRes)
-        print results
+        print([int(i) for i in sorted(results)])
+        #print results
 
-        results = []
+        #results = []
 
         # Play the game for each ai
+
+        """
         for i in xrange(generation_size):
             App = tetris.TetrisApp(ai_players[i], unitTime, minimal_gui, minimal_ai)
             # optional TODO - play 10 games for each AI
@@ -34,6 +37,9 @@ if __name__ == '__main__':
             # print "Evaluation for AI #" + str(i) + ": " + str(gameRes)
             results.append(gameRes)
         print results
+        """
+
+
 
 
         """

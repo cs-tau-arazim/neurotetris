@@ -4,13 +4,8 @@ import random
 if __name__ == '__main__':
     generation_size = generic.generation_size
 
-<<<<<<< HEAD
-    unitTime = 100
-    minimal_gui = True
-=======
     unitTime = 30
     minimal_gui = False
->>>>>>> origin/master
     minimal_ai = True
 
     ai_players_data = generic.init()
@@ -39,10 +34,8 @@ if __name__ == '__main__':
             res1 = App.run()
             print res1
 
-        """
         result_list = [(ai_players_data[i], results[i]) for i in xrange(generation_size)]
         ai_players_data = generic.generate_new_gen(result_list)
-        """
         generation += 1
 
 

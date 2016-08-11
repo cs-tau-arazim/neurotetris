@@ -116,15 +116,6 @@ def remove_row(board, row):
     return [[0 for i in xrange(cols)]] + board
 
 
-def copy_board(board1):
-    boardCopy = []
-    for i in xrange(len(board1)):
-        boardCopy.append([])
-        for j in xrange(len(board1[0])):
-            boardCopy[i].append(board1[i][j])
-    return boardCopy
-
-
 def join_matrixes(mat1, mat2, mat2_off):
     off_x, off_y = mat2_off
     for cy, row in enumerate(mat2):
@@ -157,11 +148,7 @@ class TetrisApp(object):
         self.unitTime = unitTime
         self.minimal_gui = minimal_gui
 
-<<<<<<< HEAD
-        self.landed = True
-=======
         self.count_rotate = 0;
->>>>>>> origin/master
         self.stone_count = 0
         self.shape_index = 0
         self.shape_rotate = 0
@@ -186,38 +173,38 @@ class TetrisApp(object):
 
         self.init_game()
 
-    def f_holes(self, board):
+    def f_holes(self):
         holes = 0
-        for i in range(3, len(board)): # todo 3?
-            for j in range(len(board[0])):
-                if board[i][j] == 0:
-                    if board[i-1][j] > 0:
+        for i in range(3, len(self.board)): # todo 3?
+            for j in range(len(self.board[0])):
+                if self.board[i][j] == 0:
+                    if self.board[i-1][j] > 0:
                         holes += 1
         return holes
 
-    def f_aggheight(self, board):
+    def f_aggheight(self):
         agg_height = 0
-        for j in range(len(board[0])):
+        for j in range(len(self.board[0])):
             i = 0
-            while board[i][j] == 0:
+            while self.board[i][j] == 0:
                 i += 1
             agg_height += 22 - i
         return agg_height
 
-    def f_rows(self, board):
+    def f_rows(self):
         rows_num = 0
-        for row in board[:-1]:
+        for row in self.board[:-1]:
             if 0 not in row:
                 rows_num += 1
         return rows_num
 
-    def f_bumpiness(self, board):
+    def f_bumpiness(self):
         bumpiness = 0
         prev_bump = 0
 
-        for j in range(len(board[0])):
+        for j in range(len(self.board[0])):
             i = 0
-            while board[i][j] == 0:
+            while self.board[i][j] == 0:
                 i += 1
             if j == 0:
                 prev_bump = 22 - i
@@ -342,13 +329,13 @@ class TetrisApp(object):
                                (self.stone_x, self.stone_y)):
 
                 # TODO REMEMBER
-                self.landed = True
+
                 self.board = join_matrixes(
                     self.board,
                     self.stone,
                     (self.stone_x, self.stone_y))
 
-                #self.evaluate_move()  # todo evaluate
+                self.evaluate_move()  # todo evaluate
 
                 self.new_stone()
                 cleared_rows = 0
@@ -365,14 +352,9 @@ class TetrisApp(object):
                 return True
         return False
 
-<<<<<<< HEAD
-    def evaluate_move(self, board):
-        return a*self.f_aggheight(board) + b*self.f_bumpiness(board) + c*self.f_holes(board) + d*self.f_rows(board)
-=======
     def evaluate_move(self):
         self.evaluate += b*self.f_rows()
         #self.evaluate += a*self.f_aggheight() + b*self.f_rows() + c*self.f_holes() + d*self.f_bumpiness()
->>>>>>> origin/master
 
         """
         blocked = 0  # todo check can be too negative
@@ -433,7 +415,6 @@ class TetrisApp(object):
         limit = 0
 
         while 1:
-
             if self.minimal_gui:
                 self.screen.fill((0, 0, 0))
             if self.gameover or self.stone_count > self.game_limit:
@@ -446,10 +427,6 @@ class TetrisApp(object):
                 self.evaluate_board()
                 return self.evaluate + (a*self.f_aggheight() + c*self.f_holes()+ d*self.f_bumpiness())/float(self.stone_count)
                 # self.evaluate_board()
-<<<<<<< HEAD
-                return self.evaluate
-=======
->>>>>>> origin/master
             else:
                 if self.paused:
                     if self.minimal_gui:
@@ -477,42 +454,17 @@ class TetrisApp(object):
                 pygame.display.update()
                 pygame.time.wait(self.unitTime)
 
-            # self.get_board_with_piece(copy_board(self.board), self.stone, 0)
-
             # TODO here is where we will change the game
 
-            if self.landed:
+            for i in xrange(playes_per_tick):
                 #boardCopy = [[self.board[i][j] for j in xrange(len(self.board[0]))] for i in xrange(len(self.board))]
                 #move = self.player_ai.play(join_matrixes(boardCopy, self.stone, (self.stone_x, self.stone_y)))
-                #self.get_all_moves()
-                #move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
+
+                move = self.player_ai.play(self.board, self.shape_index, self.shape_rotate, self.stone_x, self.stone_y)
                 assert len(self.board) == 23
                 assert len(self.board[0]) == 10
-
-
-                # dumb ai todo
-
-                board_moves = self.get_all_moves()
-                boards_scores = [self.evaluate_move(board_moves[i][0]) for i in xrange(len(board_moves))]
-                boards = [board_moves[i][0] for i in xrange(len(board_moves))]
-
-                #print [board_moves[i][0][10:] for i in xrange(len(board_moves))]
-
-                bestMove = boards_scores.index(max(boards_scores))
-
-                move = board_moves[bestMove][1:]
-                print move
-                while move[0] > self.stone_x:
-                    key_actions["RIGHT"]()
-                while move[0] < self.stone_x:
-                    key_actions["LEFT"]()
-
-                spins = move[1]
-                while spins > 0 :
-                    key_actions["UP"]()
-                    spins -= 1
-                self.landed = False
-
+                if move != "NOTHING":
+                    key_actions[move]()
             ##if not self.minimal_gui:
             self.drop(False)
 
@@ -551,25 +503,6 @@ class TetrisApp(object):
                                                      + key):
                             key_actions[key]()
                 """
-
-    def get_all_moves(self):
-
-        all_boards = []
-        for i in xrange(10):
-
-            for j in xrange(4):
-                self.rotate_stone()
-                if i + len(self.stone[0]) < 10:
-                    board = self.get_board_with_piece(copy_board(self.board), self.stone, i)
-                    all_boards.append((board, i, j))
-
-        return all_boards
-
-    def get_board_with_piece(self, board, piece, x):
-        depth = 0
-        while not check_collision(board, piece, (x, depth)):
-            depth += 1
-        return join_matrixes(board, piece, (x,depth))
 
 
     def evaluate_board(self):
